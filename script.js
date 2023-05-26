@@ -63,6 +63,7 @@ const settings = {
   MouseY: null,
   firstInit: 0,
   currentScene: 0,
+  canPlayerClick: true,
 
   handleClick(event) {
     const canvasRect = canvas.getBoundingClientRect();
@@ -86,13 +87,13 @@ const settings = {
         this.currentScene = 1;
     };
 
-    if(this.MouseX <= 484 && this.MouseX >= 217 && this.MouseY <= 445 && this.MouseY >= 383 && this.currentScene === 1){
+    if(this.MouseX <= 484 && this.MouseX >= 217 && this.MouseY <= 445 && this.MouseY >= 383 && this.currentScene === 1 && this.canPlayerClick === true){
       game.compareAnswer('a', 1);
-    } else if(this.MouseX <= 788 && this.MouseX >= 503 && this.MouseY <= 483 && this.MouseY >= 388 && this.currentScene === 1){
+    } else if(this.MouseX <= 788 && this.MouseX >= 503 && this.MouseY <= 483 && this.MouseY >= 388 && this.currentScene === 1 && this.canPlayerClick === true){
       game.compareAnswer('b', 2);
-    } else if(this.MouseX <= 483 && this.MouseX >= 215 && this.MouseY <= 536 && this.MouseY >= 381 && this.currentScene === 1){
+    } else if(this.MouseX <= 483 && this.MouseX >= 215 && this.MouseY <= 536 && this.MouseY >= 381 && this.currentScene === 1 && this.canPlayerClick === true){
       game.compareAnswer('c', 3);
-    } else if(this.MouseX <= 767 && this.MouseX >= 501 && this.MouseY <= 552 && this.MouseY >= 484 && this.currentScene === 1){
+    } else if(this.MouseX <= 767 && this.MouseX >= 501 && this.MouseY <= 552 && this.MouseY >= 484 && this.currentScene === 1 && this.canPlayerClick === true){
       game.compareAnswer('d', 4);
     };
   },
@@ -121,6 +122,7 @@ const game = {
   },
 
   compareAnswer(answer, buttonId){
+    this.settings.canPlayerClick = false;
     if(answer === this.currentAnswer){
       this.drawQuestion(true, buttonId);
 
@@ -130,6 +132,7 @@ const game = {
         this.currentQuestion += 1;
         this.drawQuestion();
         this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
+        this.settings.canPlayerClick = true;
       }, 3000);
     } else {
       this.drawQuestion(false, buttonId);
@@ -140,6 +143,7 @@ const game = {
         this.renderMenu();
         this.settings.currentScene = 0;
         this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
+        this.settings.canPlayerClick = true;
       }, 3000);
     }
   },
