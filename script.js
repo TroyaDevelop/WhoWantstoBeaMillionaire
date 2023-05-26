@@ -33,21 +33,21 @@ const questions = {
   },
 
   question2: {
-    text: 'Какое химическое вещество отвечает за цвет листвы растений?',
+    text: 'Какое химическое вещество\nотвечает за цвет листвы растений?',
     a: 'Хлорофилл',
     b: 'Адреналин',
     c: 'Меланин',
     d: 'Инсулин',
-    correct: null,
+    correct: 'a',
   },
 
   question3: {
-    text: 'Какое из следующих произведений не является работой Шекспира?',
+    text: 'Какое из следующих произведений\nне является работой Шекспира?',
     a: 'Гамлет',
     b: 'Ромео и Джульетта',
-    c: 'Гордость и предубеждение',
+    c: 'Гордость и\nпредубеждение',
     d: 'Отелло',
-    correct: null,
+    correct: 'c',
   },
 };
 
@@ -80,11 +80,10 @@ const settings = {
     };
 
     if(this.MouseX <= 580 && this.MouseX >= 340 && this.MouseY <= 363 && this.MouseY >= 309 && this.currentScene === 0 && this.firstInit === 1){
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
         game.renderQuestion();
         audio.menuMusic.pause();
         audio.firstQuestion.play();
-        this.currentScene += 1;
+        this.currentScene = 1;
     };
 
     if(this.MouseX <= 484 && this.MouseX >= 217 && this.MouseY <= 445 && this.MouseY >= 383 && this.currentScene === 1){
@@ -104,15 +103,17 @@ const game = {
   audio,
   settings,
   questions,
+  currentQuestion: 1,
   currentAnswer: null,
 
   init() {
     this.sprites.init();
     audio.menuMusic.play();
-    this.currentAnswer = this.questions.question1.correct;
+    this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
   },
 
   renderMenu() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.sprites.background, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.sprites.miniFrame, 330, 300, 448/1.7, 150/1.7);
     ctx.font = '30px serif';
@@ -125,14 +126,27 @@ const game = {
 
       this.audio.firstQuestion.pause();
       this.audio.correctAnswer.play();
+      setTimeout(() => {
+        this.currentQuestion += 1;
+        this.drawQuestion();
+        this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
+      }, 3000);
     } else {
       this.drawQuestion(false, buttonId);
       this.audio.firstQuestion.pause();
       this.audio.wrongAnswer.play();
+      setTimeout(() => {
+        this.currentQuestion = 1;
+        this.renderMenu();
+        this.settings.currentScene = 0;
+        this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
+      }, 3000);
     }
   },
 
   drawQuestion(correct, buttonId){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(this.sprites.background, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.sprites.questionFrame, 195, 55, 398 * 1.5, 202 * 1.5);
     //a
     if(buttonId === 1 && correct === true){
@@ -171,16 +185,15 @@ const game = {
   },
 
   renderQuestion() {
-    ctx.drawImage(this.sprites.background, 0, 0, canvas.width, canvas.height);
     this.drawQuestion();
   },
 
   askQuestion() {
-    this.drawText(this.questions.question1.text, 235, 200);
-    this.drawText(this.questions.question1.a, 280, 440);
-    this.drawText(this.questions.question1.b, 570, 440);
-    this.drawText(this.questions.question1.c, 280, 535);
-    this.drawText(this.questions.question1.d, 570, 535);
+    this.drawText(this.questions[`question${this.currentQuestion}`].text, 235, 200);
+    this.drawText(this.questions[`question${this.currentQuestion}`].a, 280, 440);
+    this.drawText(this.questions[`question${this.currentQuestion}`].b, 570, 440);
+    this.drawText(this.questions[`question${this.currentQuestion}`].c, 280, 535);
+    this.drawText(this.questions[`question${this.currentQuestion}`].d, 570, 535);
   },
 
   drawText(question, x, y) {
