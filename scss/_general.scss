@@ -3,6 +3,11 @@
   margin: 0 auto;
 }
 
+.wrapper{
+  display: flex;
+  justify-content: center;
+}
+
 canvas {
   border: 1px solid black;
   width: 85vw;

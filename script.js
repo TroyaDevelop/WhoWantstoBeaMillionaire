@@ -42,12 +42,30 @@ const questions = {
   },
 
   question3: {
-    text: 'Какое из следующих произведений\nне является работой Шекспира?',
-    a: 'Гамлет',
-    b: 'Ромео и Джульетта',
-    c: 'Гордость и\nпредубеждение',
-    d: 'Отелло',
-    correct: 'c',
+    text: 'Какое животное является\nнациональным символом\nАвстралии?',
+    a: 'Кенгуру',
+    b: 'Коала',
+    c: 'Эму',
+    d: 'Вомбат',
+    correct: 'a',
+  },
+
+  question4: {
+    text: 'Кто написал роман\n"Преступление и наказание"?',
+    a: 'Иван Тургенев',
+    b: 'Лев Толстой',
+    c: 'Антон Чехов',
+    d: 'Фёдор Достоевский',
+    correct: 'd',
+  },
+
+  question5: {
+    text: 'Какая планета Солнечной системы\nявляется самой большой по диаметру?',
+    a: 'Сатурн',
+    b: 'Юпитер',
+    c: 'Марс',
+    d: 'Земля',
+    correct: 'b',
   },
 };
 
@@ -117,7 +135,7 @@ const game = {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.sprites.background, 0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.sprites.miniFrame, 330, 300, 448/1.7, 150/1.7);
-    ctx.font = '30px serif';
+    ctx.font = '28px serif';
     this.drawText("Начать игру", 390, 350)
   },
 
@@ -193,11 +211,13 @@ const game = {
   },
 
   askQuestion() {
-    this.drawText(this.questions[`question${this.currentQuestion}`].text, 235, 200);
-    this.drawText(this.questions[`question${this.currentQuestion}`].a, 280, 440);
-    this.drawText(this.questions[`question${this.currentQuestion}`].b, 570, 440);
-    this.drawText(this.questions[`question${this.currentQuestion}`].c, 280, 535);
-    this.drawText(this.questions[`question${this.currentQuestion}`].d, 570, 535);
+    ctx.font = '30px serif';
+    this.drawText(this.questions[`question${this.currentQuestion}`].text, 235, 190);
+    ctx.font = '22px serif';
+    this.drawText(this.questions[`question${this.currentQuestion}`].a, 290, 435);
+    this.drawText(this.questions[`question${this.currentQuestion}`].b, 580, 435);
+    this.drawText(this.questions[`question${this.currentQuestion}`].c, 290, 530);
+    this.drawText(this.questions[`question${this.currentQuestion}`].d, 580, 530);
   },
 
   drawText(question, x, y) {
