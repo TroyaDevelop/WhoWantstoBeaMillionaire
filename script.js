@@ -211,7 +211,7 @@ const game = {
   },
 
   getQuestion(){
-    const id = Math.round(Math.floor() * this.questions.length+1);
+    const id = Math.round(Math.random() * this.questions.length+1);
     for(const quest of questions){
       if(quest.id === id && !this.askedQuestionsId.includes(id)){
         this.currentQuestion = quest;
