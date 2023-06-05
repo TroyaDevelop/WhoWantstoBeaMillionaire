@@ -82,7 +82,7 @@ const questions = [
   }),
   new Question({
     id: 6,
-    text: 'Какая страна является родиной пиццы?',
+    text: 'Какая страна является\nродиной пиццы?',
     a: 'Италия',
     b: 'Франция',
     c: 'Греция',
@@ -211,8 +211,13 @@ const game = {
   },
 
   getQuestion(){
-    const id = Math.round(Math.random() * this.questions.length+1);
+    let id = Math.floor(Math.random() * this.questions.length+1);
     for(const quest of questions){
+
+      if(this.askedQuestionsId.includes(id)){
+        id = Math.floor(Math.random() * this.questions.length+1);
+      };
+
       if(quest.id === id && !this.askedQuestionsId.includes(id)){
         this.currentQuestion = quest;
         this.askedQuestionsId.push(id);
