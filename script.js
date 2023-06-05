@@ -22,58 +22,117 @@ const sprites = {
   },
 };
 
-const questions = {
-  question1: {
-    text: 'В каком году\nпроизошло открытие Австралии?',
-    a: 'А) 1770',
-    b: 'Б) 1788',
-    c: 'В) 1801',
-    d: 'Г) 1856',
-    correct: 'b',
-  },
+class Question {
+  constructor(options){
+    this.id = options.id;
+    this.text = options.text;
+    this.a = options.a;
+    this.b = options.b;
+    this.c = options.c;
+    this.d = options.d;
+    this.correct = options.correct;
+  }
+};
 
-  question2: {
+const questions = [
+  new Question({
+    id: 1,
+    text: 'Кто написал философское\nпроизведение "Так говорил Заратустра"?',
+    a: 'Сартр',
+    b: 'Ницше',
+    c: 'Камю',
+    d: 'Фуко',
+    correct: 'b',
+  }),
+  new Question({
+    id:2,
     text: 'Какое химическое вещество\nотвечает за цвет листвы растений?',
     a: 'Хлорофилл',
     b: 'Адреналин',
     c: 'Меланин',
     d: 'Инсулин',
     correct: 'a',
-  },
-
-  question3: {
+  }),
+  new Question({
+    id: 3,
     text: 'Какое животное является\nнациональным символом\nАвстралии?',
     a: 'Кенгуру',
     b: 'Коала',
     c: 'Эму',
     d: 'Вомбат',
     correct: 'a',
-  },
-
-  question4: {
+  }),
+  new Question({
+    id: 4,
     text: 'Кто написал роман\n"Преступление и наказание"?',
     a: 'Иван Тургенев',
     b: 'Лев Толстой',
     c: 'Антон Чехов',
     d: 'Фёдор Достоевский',
     correct: 'd',
-  },
-
-  question5: {
+  }),
+  new Question({
+    id: 5,
     text: 'Какая планета Солнечной системы\nявляется самой большой по диаметру?',
     a: 'Сатурн',
     b: 'Юпитер',
     c: 'Марс',
     d: 'Земля',
     correct: 'b',
-  },
-};
+  }),
+  new Question({
+    id: 6,
+    text: 'Какая страна является родиной пиццы?',
+    a: 'Италия',
+    b: 'Франция',
+    c: 'Греция',
+    d: 'США',
+    correct: 'a',
+  }),
+  new Question({
+    id: 7,
+    text: 'Кто является автором\nпроизведения "Война и мир"?',
+    a: 'Александр Пушкин',
+    b: 'Фёдор Достоевский',
+    c: 'Лев Толстой',
+    d: 'Иван Тургенев',
+    correct: 'c',
+  }),
+  new Question({
+    id: 8,
+    text: 'Какой химический элемент\nобозначается символом "Fe"?',
+    a: 'Железо',
+    b: 'Серебро',
+    c: 'Фтор',
+    d: 'Кальций',
+    correct: 'a',
+  }),
+  new Question({
+    id: 9,
+    text: 'Кто является автором картины\n"Мона Лиза"?',
+    a: 'Микеланджело',
+    b: 'Пабло Пикассо',
+    c: 'Леонардо да Винчи',
+    d: 'Клод Моне',
+    correct: 'c',
+  }),
+  new Question({
+    id: 10,
+    text: 'Кто является автором книги "1984"?',
+    a: 'Алдоус Хаксли',
+    b: 'Рэй Брэдбери',
+    c: 'Харпер Ли',
+    d: 'Джордж Оруэлл',
+    correct: 'd',
+  }),
+];
 
 const audio = {
   menuMusic: new Audio('./audio/menu.mp3'),
   firstQuestion: new Audio('./audio/firstQuestion.mp3'),
   correctAnswer: new Audio('./audio/correctAnswer.mp3'),
   wrongAnswer: new Audio('./audio/wrongAnswer.mp3'),
+  transitionQuestion: new Audio('./audio/transitionQuestion.mp3'),
 };
 
 const settings = {
@@ -122,13 +181,25 @@ const game = {
   audio,
   settings,
   questions,
-  currentQuestion: 1,
+  currentQuestion: null,
   currentAnswer: null,
+  askedQuestionsId: [],
 
   init() {
     this.sprites.init();
     audio.menuMusic.play();
-    this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
+    this.getQuestion();
+    this.currentAnswer = this.currentQuestion.correct;
+  },
+
+  nextQuestionTransition(){
+    setTimeout(() => {
+      this.getQuestion();
+      this.drawQuestion();
+      this.currentAnswer = this.currentQuestion.correct;
+      this.settings.canPlayerClick = true;
+      this.audio.transitionQuestion.play();
+    }, 3000);
   },
 
   renderMenu() {
@@ -139,6 +210,17 @@ const game = {
     this.drawText("Начать игру", 390, 350)
   },
 
+  getQuestion(){
+    const id = Math.round(Math.floor() * this.questions.length+1);
+    for(const quest of questions){
+      if(quest.id === id && !this.askedQuestionsId.includes(id)){
+        this.currentQuestion = quest;
+        this.askedQuestionsId.push(id);
+        break;
+      };
+    };
+  },
+
   compareAnswer(answer, buttonId){
     this.settings.canPlayerClick = false;
     if(answer === this.currentAnswer){
@@ -146,24 +228,23 @@ const game = {
 
       this.audio.firstQuestion.pause();
       this.audio.correctAnswer.play();
-      setTimeout(() => {
-        this.currentQuestion += 1;
-        this.drawQuestion();
-        this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
-        this.settings.canPlayerClick = true;
-      }, 3000);
+      this.nextQuestionTransition();
     } else {
       this.drawQuestion(false, buttonId);
       this.audio.firstQuestion.pause();
       this.audio.wrongAnswer.play();
-      setTimeout(() => {
-        this.currentQuestion = 1;
-        this.renderMenu();
-        this.settings.currentScene = 0;
-        this.currentAnswer = this.questions[`question${this.currentQuestion}`].correct;
-        this.settings.canPlayerClick = true;
-      }, 3000);
+      this.gameLose();
     }
+  },
+
+  gameLose(){
+    setTimeout(() => {
+      this.renderMenu();
+      this.settings.currentScene = 0;
+      this.currentAnswer = this.currentQuestion.correct;
+      this.settings.canPlayerClick = true;
+      this.getQuestion();
+    }, 3000);
   },
 
   drawQuestion(correct, buttonId){
@@ -212,12 +293,12 @@ const game = {
 
   askQuestion() {
     ctx.font = '30px serif';
-    this.drawText(this.questions[`question${this.currentQuestion}`].text, 235, 190);
+    this.drawText(this.currentQuestion.text, 235, 190);
     ctx.font = '22px serif';
-    this.drawText(this.questions[`question${this.currentQuestion}`].a, 290, 435);
-    this.drawText(this.questions[`question${this.currentQuestion}`].b, 580, 435);
-    this.drawText(this.questions[`question${this.currentQuestion}`].c, 290, 530);
-    this.drawText(this.questions[`question${this.currentQuestion}`].d, 580, 530);
+    this.drawText(this.currentQuestion.a, 280, 435);
+    this.drawText(this.currentQuestion.b, 570, 435);
+    this.drawText(this.currentQuestion.c, 280, 530);
+    this.drawText(this.currentQuestion.d, 570, 530);
   },
 
   drawText(question, x, y) {
