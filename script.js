@@ -34,98 +34,7 @@ class Question {
   }
 };
 
-const questions = [
-  new Question({
-    id: 1,
-    text: 'Кто написал философское\nпроизведение "Так говорил Заратустра"?',
-    a: 'Сартр',
-    b: 'Ницше',
-    c: 'Камю',
-    d: 'Фуко',
-    correct: 'b',
-  }),
-  new Question({
-    id:2,
-    text: 'Какое химическое вещество\nотвечает за цвет листвы растений?',
-    a: 'Хлорофилл',
-    b: 'Адреналин',
-    c: 'Меланин',
-    d: 'Инсулин',
-    correct: 'a',
-  }),
-  new Question({
-    id: 3,
-    text: 'Какое животное является\nнациональным символом\nАвстралии?',
-    a: 'Кенгуру',
-    b: 'Коала',
-    c: 'Эму',
-    d: 'Вомбат',
-    correct: 'a',
-  }),
-  new Question({
-    id: 4,
-    text: 'Кто написал роман\n"Преступление и наказание"?',
-    a: 'Иван Тургенев',
-    b: 'Лев Толстой',
-    c: 'Антон Чехов',
-    d: 'Фёдор Достоевский',
-    correct: 'd',
-  }),
-  new Question({
-    id: 5,
-    text: 'Какая планета Солнечной системы\nявляется самой большой по диаметру?',
-    a: 'Сатурн',
-    b: 'Юпитер',
-    c: 'Марс',
-    d: 'Земля',
-    correct: 'b',
-  }),
-  new Question({
-    id: 6,
-    text: 'Какая страна является\nродиной пиццы?',
-    a: 'Италия',
-    b: 'Франция',
-    c: 'Греция',
-    d: 'США',
-    correct: 'a',
-  }),
-  new Question({
-    id: 7,
-    text: 'Кто является автором\nпроизведения "Война и мир"?',
-    a: 'Александр Пушкин',
-    b: 'Фёдор Достоевский',
-    c: 'Лев Толстой',
-    d: 'Иван Тургенев',
-    correct: 'c',
-  }),
-  new Question({
-    id: 8,
-    text: 'Какой химический элемент\nобозначается символом "Fe"?',
-    a: 'Железо',
-    b: 'Серебро',
-    c: 'Фтор',
-    d: 'Кальций',
-    correct: 'a',
-  }),
-  new Question({
-    id: 9,
-    text: 'Кто является автором картины\n"Мона Лиза"?',
-    a: 'Микеланджело',
-    b: 'Пабло Пикассо',
-    c: 'Леонардо да Винчи',
-    d: 'Клод Моне',
-    correct: 'c',
-  }),
-  new Question({
-    id: 10,
-    text: 'Кто является автором книги "1984"?',
-    a: 'Алдоус Хаксли',
-    b: 'Рэй Брэдбери',
-    c: 'Харпер Ли',
-    d: 'Джордж Оруэлл',
-    correct: 'd',
-  }),
-];
+const questions = [];
 
 const audio = {
   menuMusic: new Audio('./audio/menu.mp3'),
@@ -187,9 +96,27 @@ const game = {
 
   init() {
     this.sprites.init();
+    this.parseQuestions();
     audio.menuMusic.play();
-    this.getQuestion();
-    this.currentAnswer = this.currentQuestion.correct;
+  },
+
+  parseQuestions(){
+    fetch("questions.json")
+    .then(result => result.json())
+    .then(data => {
+      data.forEach(elem => {
+        let quest = new Question({
+          id: elem.id,
+          text: elem.text,
+          a: elem.a,
+          b: elem.b,
+          c: elem.c,
+          d: elem.d,
+          correct: elem.correct,
+        });
+        this.questions.push(quest);
+      })
+    })
   },
 
   nextQuestionTransition(){
@@ -293,6 +220,8 @@ const game = {
   },
 
   renderQuestion() {
+    this.getQuestion();
+    this.currentAnswer = this.currentQuestion.correct;
     this.drawQuestion();
   },
 
