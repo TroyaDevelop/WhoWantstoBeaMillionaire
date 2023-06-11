@@ -90,6 +90,7 @@ const game = {
   audio,
   settings,
   questions,
+  questNumber: 1,
   currentQuestion: null,
   currentAnswer: null,
   askedQuestionsId: [],
@@ -104,7 +105,13 @@ const game = {
     fetch("questions.json")
     .then(result => result.json())
     .then(data => {
-      data.forEach(elem => {
+      let arr = [];
+      for(let i = 0; i < 10; i++){
+        let random = Math.floor(Math.random() * data.length);
+        arr.push(data[random]);
+        data.splice(random, 1);
+      };
+      arr.forEach(elem => {
         let quest = new Question({
           id: elem.id,
           text: elem.text,
@@ -121,7 +128,7 @@ const game = {
 
   nextQuestionTransition(){
     setTimeout(() => {
-      this.getQuestion();
+      this.currentQuestion = this.questions[this.questNumber-1];
       this.drawQuestion();
       this.currentAnswer = this.currentQuestion.correct;
       this.settings.canPlayerClick = true;
@@ -137,29 +144,13 @@ const game = {
     this.drawText("Начать игру", 390, 350)
   },
 
-  getQuestion(){
-    let id = Math.floor(Math.random() * this.questions.length+1);
-    for(const quest of questions){
-
-      if(this.askedQuestionsId.includes(id)){
-        id = Math.floor(Math.random() * this.questions.length+1);
-      };
-
-      if(quest.id === id && !this.askedQuestionsId.includes(id)){
-        this.currentQuestion = quest;
-        this.askedQuestionsId.push(id);
-        break;
-      };
-    };
-  },
-
   compareAnswer(answer, buttonId){
     this.settings.canPlayerClick = false;
     if(answer === this.currentAnswer){
       this.drawQuestion(true, buttonId);
-
       this.audio.firstQuestion.pause();
       this.audio.correctAnswer.play();
+      this.questNumber += 1;
       this.nextQuestionTransition();
     } else {
       this.drawQuestion(false, buttonId);
@@ -173,10 +164,15 @@ const game = {
     setTimeout(() => {
       this.renderMenu();
       this.settings.currentScene = 0;
-      this.currentAnswer = this.currentQuestion.correct;
       this.settings.canPlayerClick = true;
-      this.getQuestion();
+      this.gameReset();
     }, 3000);
+  },
+
+  gameReset(){
+    this.questNumber = 1;
+    this.questions = [];
+    this.parseQuestions();
   },
 
   drawQuestion(correct, buttonId){
@@ -220,7 +216,7 @@ const game = {
   },
 
   renderQuestion() {
-    this.getQuestion();
+    this.currentQuestion = this.questions[this.questNumber-1];
     this.currentAnswer = this.currentQuestion.correct;
     this.drawQuestion();
   },
